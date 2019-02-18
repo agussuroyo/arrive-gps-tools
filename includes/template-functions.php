@@ -1,4 +1,7 @@
 <?php
+
+defined('ABSPATH') || exit();
+
 if (!function_exists('agt_get_template')) {
 
     function agt_get_template($____file = '', $data = [])

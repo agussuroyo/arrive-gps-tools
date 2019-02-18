@@ -1,10 +1,18 @@
 <?php
 
+defined('ABSPATH') || exit();
+
 use Twilio\Rest\Client;
 
 class AGT_Shortcode
 {
 
+    /**
+     * Form handler
+     * 
+     * @global array $agt_form_errors
+     * @return void
+     */
     public function handle()
     {
         if (!isset($_POST['agt_submit'])) {
@@ -73,7 +81,7 @@ class AGT_Shortcode
             $activate = $this->send_activate(array(
                 'sid' => 'DEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
             ));
-            
+
             // Configure
             if (!is_wp_error($activate)) {
                 $this->send_sms(array(
@@ -84,6 +92,12 @@ class AGT_Shortcode
         }
     }
 
+    /**
+     * Send SMS to with body
+     * 
+     * @param array $args
+     * @return \WP_Error|object
+     */
     public function send_sms($args = [])
     {
         try {
@@ -97,14 +111,19 @@ class AGT_Shortcode
             $twilio = new Client(get_option('agt_account_sid'), get_option('agt_auth_token'));
 
             return $twilio->messages->create($params['to'], array(
-                        "from" => $params['from'],
-                        "body" => $params['body']
+                        'from' => $params['from'],
+                        'body' => $params['body']
             ));
         } catch (Exception $exc) {
             return new WP_Error($exc->getCode(), $exc->getMessage());
         }
     }
 
+    /**
+     * Get all available SIMS
+     * 
+     * @return \WP_Error|object
+     */
     public function get_sims()
     {
         try {
@@ -124,6 +143,12 @@ class AGT_Shortcode
         }
     }
 
+    /**
+     * SIM activation
+     * 
+     * @param array $args
+     * @return \WP_Error|object
+     */
     public function send_activate($args = [])
     {
         try {
@@ -133,13 +158,18 @@ class AGT_Shortcode
 
             $twilio = new Client(get_option('agt_account_sid'), get_option('agt_auth_token'));
             return $twilio->wireless->v1->sims($params['sid'])->update(array(
-                        "status" => "active"
+                        'status' => 'active'
             ));
         } catch (Exception $exc) {
             return new WP_Error($exc->getCode(), $exc->getMessage());
         }
     }
 
+    /**
+     * Display form
+     * 
+     * @return string
+     */
     public function form()
     {
         return agt_get_template('form.php');

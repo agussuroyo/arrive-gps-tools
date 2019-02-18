@@ -7,9 +7,7 @@
   Author: Agus Suroyo
  */
 
-if (!defined('ABSPATH')) {
-    exit; // Exit if accessed directly.
-}
+defined('ABSPATH') || exit();
 
 define('AGT_PATH', __DIR__);
 
@@ -18,6 +16,11 @@ class AGT
 
     protected static $instance = null;
 
+    /**
+     * Singleton
+     * 
+     * @return object
+     */
     public static function instance()
     {
         if (is_null(self::$instance)) {
@@ -33,6 +36,9 @@ class AGT
         $this->hooks();
     }
 
+    /**
+     * Load all files
+     */
     public function includes()
     {
         $plugin_path = AGT_PATH . DIRECTORY_SEPARATOR;
@@ -43,15 +49,20 @@ class AGT
         include_once $plugin_path . 'includes/template-functions.php';
     }
 
+    /**
+     * Running the hooks
+     */
     public function hooks()
     {
+        // form and the handler
         $shortcode = new AGT_Shortcode();
         add_action('wp', array($shortcode, 'handle'));
         add_shortcode('arrive_activation_form', array($shortcode, 'form'));
-        
-        
+
+
+        // Administration area
         $admin = new AGT_Admin();
-        if(is_admin()){
+        if (is_admin()) {
             add_action('admin_init', array($admin, 'setting_handle'));
             add_action('admin_menu', array($admin, 'menu'));
         }
@@ -59,4 +70,5 @@ class AGT
 
 }
 
+// Run...
 AGT::instance();

@@ -1,13 +1,23 @@
 <?php
 
+defined('ABSPATH') || exit();
+
 class AGT_Admin
 {
 
+    /**
+     * Admin menu
+     */
     public function menu()
     {
         add_menu_page('AGT', 'AGT', 'manage_options', 'agt', array($this, 'setting_form'));
     }
 
+    /**
+     * Setting handler
+     * 
+     * @return void
+     */
     public function setting_handle()
     {
         if (!isset($_POST['agt_setting_save'])) {
@@ -15,21 +25,24 @@ class AGT_Admin
         }
 
         $sid = agt_request_post('sms_from');
-        if($sid){
+        if ($sid) {
             update_option('agt_sms_from', $sid);
         }
-        
+
         $sid = agt_request_post('account_sid');
-        if($sid){
+        if ($sid) {
             update_option('agt_account_sid', $sid);
         }
 
         $token = agt_request_post('auth_token');
-        if($token){
+        if ($token) {
             update_option('agt_auth_token', $token);
         }
     }
 
+    /**
+     * Displaying form
+     */
     public function setting_form()
     {
         $data = [];

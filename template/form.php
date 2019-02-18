@@ -1,3 +1,6 @@
+<?php
+defined('ABSPATH') || exit();
+?>
 <form action="" method="post">
     <div class="wrap-forms">
         <div class="fw-row">

@@ -1,3 +1,6 @@
+<?php
+defined('ABSPATH') || exit();
+?>
 <div class="wrap">
     <h2><?php echo $admin_title; ?></h2>
     <form action="" method="post">
