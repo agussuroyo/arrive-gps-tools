@@ -46,6 +46,7 @@ class AGT
         include_once $plugin_path . 'vendor/autoload.php';
         include_once $plugin_path . 'includes/class-agt-admin.php';
         include_once $plugin_path . 'includes/class-agt-shortcode.php';
+        include_once $plugin_path . 'includes/class-agt-webhook.php';
         include_once $plugin_path . 'includes/template-functions.php';
     }
 
@@ -65,6 +66,12 @@ class AGT
         if (is_admin()) {
             add_action('admin_init', array($admin, 'setting_handle'));
             add_action('admin_menu', array($admin, 'menu'));
+        }
+
+        // Callback handler
+        $webhook = new AGT_Webhook();
+        if (isset($_GET['agt_callback']) && ($_GET['agt_callback'] == 'yes')) {
+            add_action('init', array($webhook, 'notify_sim_update'));
         }
     }
 

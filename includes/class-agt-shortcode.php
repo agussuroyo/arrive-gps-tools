@@ -78,44 +78,9 @@ class AGT_Shortcode
         if (empty($agt_form_errors)) {
 
             // Activate first
-            $activate = $this->send_activate(array(
+            $this->send_activate(array(
                 'sid' => 'DEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
             ));
-
-            // Configure
-            if (!is_wp_error($activate)) {
-                $this->send_sms(array(
-                    'to' => '+6285747090757',
-                    'body' => 'sms test'
-                ));
-            }
-        }
-    }
-
-    /**
-     * Send SMS to with body
-     * 
-     * @param array $args
-     * @return \WP_Error|object
-     */
-    public function send_sms($args = [])
-    {
-        try {
-
-            $params = wp_parse_args($args, array(
-                'from' => get_option('agt_sms_from'),
-                'to' => '',
-                'body' => ''
-            ));
-
-            $twilio = new Client(get_option('agt_account_sid'), get_option('agt_auth_token'));
-
-            return $twilio->messages->create($params['to'], array(
-                        'from' => $params['from'],
-                        'body' => $params['body']
-            ));
-        } catch (Exception $exc) {
-            return new WP_Error($exc->getCode(), $exc->getMessage());
         }
     }
 
@@ -158,7 +123,9 @@ class AGT_Shortcode
 
             $twilio = new Client(get_option('agt_account_sid'), get_option('agt_auth_token'));
             return $twilio->wireless->v1->sims($params['sid'])->update(array(
-                        'status' => 'active'
+                        'status' => 'active',
+                        'callbackUrl' => add_query_arg(array('agt_callback' => 'yes'), home_url()),
+                        'callbackMethod' => 'POST'
             ));
         } catch (Exception $exc) {
             return new WP_Error($exc->getCode(), $exc->getMessage());
