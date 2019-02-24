@@ -27,10 +27,10 @@ class AGT_Webhook
         }
 
         if ($sim_status == 'active') {
-            $this->send_sms(array(
-                'to' => '',
-                'body' => ''
-            ));
+//            $this->send_sms(array(
+//                'to' => '',
+//                'body' => ''
+//            ));
         }
 
         wp_send_json(array(

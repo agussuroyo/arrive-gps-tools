@@ -15,121 +15,75 @@ class AGT_Shortcode
      */
     public function handle()
     {
-        if (!isset($_POST['agt_submit'])) {
-            return;
-        }
 
-        // Form Validations
-        global $agt_form_errors;
-        $agt_form_errors = [];
+	global $agt_form_errors, $agt_form_success, $agt_form_fields;
+	$agt_form_errors = [];
+	$agt_form_success = [];
+	$agt_form_fields = [];
 
-        $rules = array(
-            [
-                'name' => 'agt_name',
-                'callback' => function($value) {
-                    return !empty($value);
-                }
-            ],
-            [
-                'name' => 'agt_bussines_name',
-                'callback' => function($value) {
-                    return !empty($value);
-                }
-            ],
-            [
-                'name' => 'agt_bussines_address',
-                'callback' => function($value) {
-                    return !empty($value);
-                }
-            ],
-            [
-                'name' => 'agt_imei',
-                'callback' => function($value) {
-                    return !empty($value);
-                }
-            ],
-            [
-                'name' => 'agt_date',
-                'callback' => function($value) {
-                    return !empty($value);
-                }
-            ],
-            [
-                'name' => 'agt_device_type',
-                'callback' => function($value) {
-                    return !empty($value);
-                }
-            ],
-        );
+	$rates = agt_get_rates_plan();
 
-        // Apply rules
-        foreach ($rules as $rule) {
-            if (!call_user_func_array($rule['callback'], [agt_request_post($rule['name'])])) {
-                $agt_form_errors[$rule['name']] = 'The field is required';
-            }
-        }
+	if (!isset($_POST['agt_submit'])) {
+	    return;
+	}
 
-        // Stop when errors
-        if (!empty($agt_form_errors)) {
-            return;
-        }
+	// Form Validations
+	$rules = array(
+	    [
+		'name' => 'agt_unique_name',
+		'callback' => function($value) {
+		    return !empty($value);
+		}
+	    ],
+	    [
+		'name' => 'agt_rates',
+		'callback' => function($value) {
+		    return !empty($value);
+		}
+	    ]
+	);
 
-        // No errors? Execute the configuration
-        if (empty($agt_form_errors)) {
+	// Apply rules
+	foreach ($rules as $rule) {
+	    $post_item = agt_request_post($rule['name']);
+	    $agt_form_fields[$rule['name']] = $post_item;
+	    if (!call_user_func_array($rule['callback'], [$post_item])) {
+		$agt_form_errors[$rule['name']] = 'The field is required';
+	    }
+	}
 
-            // Activate first
-            $this->send_activate(array(
-                'sid' => 'DEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
-            ));
-        }
-    }
+	// Stop when errors
+	if (!empty($agt_form_errors)) {
+	    return;
+	}
 
-    /**
-     * Get all available SIMS
-     * 
-     * @return \WP_Error|object
-     */
-    public function get_sims()
-    {
-        try {
-            $sims = [];
+	// No errors? Execute the configuration
+	try {
 
-            $twilio = new Client(get_option('agt_account_sid'), get_option('agt_auth_token'));
+	    $sid = agt_get_simid_by_unique(agt_request_post('agt_unique_name'));
+	    if (is_wp_error($sid)) {
+		throw new Exception($sid->get_error_message(), $sid->get_error_code());
+	    }
 
-            $results = $twilio->wireless->v1->sims->read();
+	    $data = array(
+		'sid' => $sid,
+		'status' => 'active'
+	    );
 
-            foreach ($results as $record) {
-                $sims[] = $record->sid;
-            }
+	    $rate_plan_id = agt_request_post('agt_rates');
+	    if (!empty($rate_plan_id)) {
+		$data['ratePlan'] = $rate_plan_id;
+	    }
 
-            return $sims;
-        } catch (Exception $exc) {
-            return new WP_Error($exc->getCode(), $exc->getMessage());
-        }
-    }
+	    $save = agt_update_status($data);
 
-    /**
-     * SIM activation
-     * 
-     * @param array $args
-     * @return \WP_Error|object
-     */
-    public function send_activate($args = [])
-    {
-        try {
-            $params = wp_parse_args($args, array(
-                'sid' => ''
-            ));
-
-            $twilio = new Client(get_option('agt_account_sid'), get_option('agt_auth_token'));
-            return $twilio->wireless->v1->sims($params['sid'])->update(array(
-                        'status' => 'active',
-                        'callbackUrl' => add_query_arg(array('agt_callback' => 'yes'), home_url()),
-                        'callbackMethod' => 'POST'
-            ));
-        } catch (Exception $exc) {
-            return new WP_Error($exc->getCode(), $exc->getMessage());
-        }
+	    if (!is_wp_error($save)) {
+		$agt_form_success[] = 'Activating SIM processed.';
+		$agt_form_fields = [];
+	    }
+	} catch (Exception $exc) {
+	    $agt_form_errors['agt_unique_name'] = 'Incorrect SIM';
+	}
     }
 
     /**
@@ -139,7 +93,14 @@ class AGT_Shortcode
      */
     public function form()
     {
-        return agt_get_template('form.php');
+	global $agt_form_success, $agt_form_fields;
+	$rates = agt_get_rates_plan();
+
+	$data = [];
+	$data['rates'] = $rates;
+	$data['success_message'] = $agt_form_success;
+	$data['fields'] = $agt_form_fields;
+	return agt_get_template('form.php', $data);
     }
 
 }

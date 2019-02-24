@@ -2,60 +2,44 @@
 defined('ABSPATH') || exit();
 ?>
 <form action="" method="post">
+    <?php
+    if (isset($success_message) && is_array($success_message)) {
+	echo '<ul class="fw-flash-type-success">';
+	foreach ($success_message as $message) {
+	    ?>
+	    <li class="fw-flash-message"><?php echo $message; ?></li>
+	    <?php
+	}
+	echo '</ul>';
+    }
+    ?>
     <div class="wrap-forms">
         <div class="fw-row">
             <div class="fw-col-xs-12 fw-col-sm-6 form-builder-item">
                 <div class="field-text">
-                    <input type="text" name="agt_name" class="" value="" placeholder="Name" autocomplete="off" />
+                    <input type="text" name="agt_unique_name" class="" value="<?php echo isset($fields['agt_unique_name']) ? $fields['agt_unique_name'] : null; ?>" placeholder="SIM Unique Name" autocomplete="off" />
                 </div>
-                <?php echo agt_inline_error('agt_name'); ?>
-            </div>
-        </div>
-        <div class="fw-row">
-            <div class="fw-col-xs-12 fw-col-sm-6 form-builder-item">
-                <div class="field-text">
-                    <input type="text" name="agt_bussines_name" class="" value="" placeholder="Business Name" autocomplete="off" />
-                </div>
-                <?php echo agt_inline_error('agt_bussines_name'); ?>
-            </div>
-        </div>
-        <div class="fw-row">
-            <div class="fw-col-xs-12 fw-col-sm-6 form-builder-item">
-                <div class="field-text">
-                    <input type="text" name="agt_bussines_address" class="" value="" placeholder="Business Address" autocomplete="off" />
-                </div>
-                <?php echo agt_inline_error('agt_bussines_address'); ?>
-            </div>
-        </div>
-        <div class="fw-row">
-            <div class="fw-col-xs-12 fw-col-sm-6 form-builder-item">
-                <div class="field-text">
-                    <input type="text" name="agt_imei" class="" value="" placeholder="IMEI Number" autocomplete="off" />
-                </div>
-                <?php echo agt_inline_error('agt_imei'); ?>
-            </div>
-        </div>
-        <div class="fw-row">
-            <div class="fw-col-xs-12 fw-col-sm-6 form-builder-item">
-                <div class="field-text">
-                    <input type="date" name="agt_date" class="" placeholder="Date" autocomplete="off" />
-                </div>
-                <?php echo agt_inline_error('agt_date'); ?>
+		<?php echo agt_inline_error('agt_unique_name'); ?>
             </div>
         </div>
         <div class="fw-row">
             <div class="fw-col-xs-12 fw-col-sm-6 form-builder-item">
                 <div class="field-select">
-                    <select name="agt_device_type">
-                        <option value="">Device Type</option>
-                        <option value="1">XT2050C</option>
-                        <option value="2">XT2060G</option>
-                        <option value="3">XT2150CS</option>
-                        <option value="4">XT2150CV</option>
-                        <option value="5">XT2160G</option>                        
+		    <?php
+		    $selected = isset($fields['agt_rates']) ? $fields['agt_rates'] : null;
+		    ?>
+                    <select name="agt_rates">
+                        <option value="">Rate Plan</option>
+			<?php
+			foreach ($rates as $id => $rate) {
+			    ?>
+    			<option value="<?php echo $id; ?>" <?php selected($selected, $id); ?>><?php echo $rate; ?></option>
+			    <?php
+			}
+			?>
                     </select>
                 </div>
-                <?php echo agt_inline_error('agt_date'); ?>
+		<?php echo agt_inline_error('agt_rates'); ?>
             </div>
         </div>
         <div class="fw-row">
