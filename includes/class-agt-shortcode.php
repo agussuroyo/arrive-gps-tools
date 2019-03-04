@@ -36,25 +36,25 @@ class AGT_Shortcode {
 
 		// Form Validations
 		$rules = array(
-			[
+			array(
 				'name'     => 'agt_unique_name',
 				'callback' => function( $value ) {
 					return ! empty( $value );
 				},
-			],
-			[
+			),
+			array(
 				'name'     => 'agt_rates',
 				'callback' => function( $value ) {
 					return ! empty( $value );
 				},
-			],
+			),
 		);
 
 		// Apply rules.
 		foreach ( $rules as $rule ) {
 			$post_item                        = agt_request_post( $rule['name'] );
 			$agt_form_fields[ $rule['name'] ] = $post_item;
-			if ( ! call_user_func_array( $rule['callback'], [ $post_item ] ) ) {
+			if ( ! call_user_func_array( $rule['callback'], array( $post_item ) ) ) {
 				$agt_form_errors[ $rule['name'] ] = 'The field is required';
 			}
 		}

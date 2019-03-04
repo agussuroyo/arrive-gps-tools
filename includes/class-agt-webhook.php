@@ -53,7 +53,7 @@ class AGT_Webhook {
 	 * @param array $args Array or args.
 	 * @return \WP_Error|object
 	 */
-	public function send_sms( $args = [] ) {
+	public function send_sms( $args = array() ) {
 		try {
 
 			$params = wp_parse_args(

@@ -9,7 +9,7 @@ defined( 'ABSPATH' ) || exit();
 
 if ( ! function_exists( 'agt_get_template' ) ) {
 
-	function agt_get_template( $____file = '', $data = [] ) {
+	function agt_get_template( $____file = '', $data = array() ) {
 		ob_start();
 		extract( $data, EXTR_SKIP );
 		include AGT_PATH . DIRECTORY_SEPARATOR . 'template/' . trim( $____file, DIRECTORY_SEPARATOR );
@@ -59,7 +59,7 @@ if ( ! function_exists( 'agt_get_rates_plan' ) ) {
 			$ratePlans = $twilio->wireless->v1->ratePlans
 			->read();
 
-			$rates = [];
+			$rates = array();
 			foreach ( $ratePlans as $record ) {
 				$rates[ $record->sid ] = $record->uniqueName;
 			}
@@ -78,7 +78,7 @@ if ( ! function_exists( 'agt_get_all_sim' ) ) {
 
 	function agt_get_all_sim() {
 		try {
-			$sims = [];
+			$sims = array();
 
 			$twilio = new Twilio\Rest\Client( get_option( 'agt_account_sid' ), get_option( 'agt_auth_token' ) );
 
@@ -98,7 +98,7 @@ if ( ! function_exists( 'agt_get_all_sim' ) ) {
 if ( ! function_exists( 'agt_get_simid_by_unique' ) ) {
 
 	function agt_get_simid_by_unique( $name = '' ) {
-		$sim = [];
+		$sim = array();
 
 		try {
 			$twilio = new Twilio\Rest\Client( get_option( 'agt_account_sid' ), get_option( 'agt_auth_token' ) );
@@ -115,7 +115,7 @@ if ( ! function_exists( 'agt_get_simid_by_unique' ) ) {
 
 if ( ! function_exists( 'agt_update_status' ) ) {
 
-	function agt_update_status( $args = [] ) {
+	function agt_update_status( $args = array() ) {
 		try {
 			$params = wp_parse_args(
 				$args,
