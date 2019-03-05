@@ -28,8 +28,6 @@ class AGT_Shortcode {
 		$agt_form_success = array();
 		$agt_form_fields  = array();
 
-		$rates = agt_get_rates_plan();
-
 		if ( ! isset( $_POST['agt_submit'] ) ) {
 			return;
 		}

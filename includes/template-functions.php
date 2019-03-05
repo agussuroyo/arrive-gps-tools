@@ -54,10 +54,16 @@ if ( ! function_exists( 'agt_get_rates_plan' ) ) {
 		if ( empty( $rate_plans ) ) {
 			$sid    = get_option( 'agt_account_sid' );
 			$token  = get_option( 'agt_auth_token' );
-			$twilio = new Twilio\Rest\Client( $sid, $token );
+			
+			$ratePlans = array();
+			try {
+				$twilio = new Twilio\Rest\Client( $sid, $token );
 
-			$ratePlans = $twilio->wireless->v1->ratePlans
-			->read();
+				$ratePlans = $twilio->wireless->v1->ratePlans
+				->read();
+			} catch (Exception $ex) {
+
+			}
 
 			$rates = array();
 			foreach ( $ratePlans as $record ) {
@@ -66,7 +72,7 @@ if ( ! function_exists( 'agt_get_rates_plan' ) ) {
 
 			$rate_plans = $rates;
 
-			set_transient( 'agt_rates_plan', $rates, WEEK_IN_SECONDS );
+			set_transient( 'agt_rates_plan', $rates, HOUR_IN_SECONDS / 2 );
 		}
 
 		return $rate_plans;
