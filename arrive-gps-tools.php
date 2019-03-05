@@ -3,7 +3,7 @@
 /**
  * Plugin Name: Arrive GPS Tools
  * Description: Used by Arrive to activate and configure GPS device.
- * Version: 1.0.1
+ * Version: 1.0.2
  * Author: Agus Suroyo
  *
  * @package AGT
